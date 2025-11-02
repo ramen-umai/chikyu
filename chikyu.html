@@ -19,7 +19,8 @@ p.desc{ color:#555; margin-bottom:18px; }
 .card{
   padding:16px; background:linear-gradient(180deg,#fff,#f5f9ff);
   border:1px solid #e3ebf9; border-radius:10px;
-  font-size:1.2rem; box-shadow:0 3px 8px rgba(0,0,0,0.05);
+  font-size:1.3rem; box-shadow:0 3px 8px rgba(0,0,0,0.05);
+  line-height:1.8;
 }
 small{ color:#666; display:block; margin-top:12px; }
 </style>
@@ -27,34 +28,50 @@ small{ color:#666; display:block; margin-top:12px; }
 <body>
 <main>
   <h1>「何時何分何秒何回地球が回ったとき」を対処したい人へ</h1>
-  <h2>今までに地球が回った回数</h2>
-  <p class="desc">地球の誕生（約46億年前）を基準にしています。<br>
-  恒星日（86164.091秒）で計算中。</p>
+  <h2>今この瞬間</h2>
+  <p class="desc">基準を地球の誕生（約46億年前）ということにし、<br>
+  恒星日（86164.091秒）で回転数を算出しています。</p>
   <div class="card" id="output">計算中...</div>
+  <img href="img.jpg">
 </main>
 
 <script>
-const SIDEREAL_DAY = 86164.091; // 地球1回転の秒数
+const SIDEREAL_DAY = 86164.091; // 地球が1回転する秒数（恒星日）
 const YEARS_AGO = 4.6e9; // 46億年前
+const SECONDS_IN_YEAR = 365.25 * 24 * 3600; // 1年あたりの秒数
 
 function calculateRotations() {
-  // 46億年前を現在から引く
-  const now = new Date();
-  const secondsAgo = YEARS_AGO * 365.25 * 24 * 3600;
+  // 46億年分の総秒数を求める
+  const secondsAgo = YEARS_AGO * SECONDS_IN_YEAR;
+  // その秒数を地球の回転周期で割る
   const rotations = secondsAgo / SIDEREAL_DAY;
-  return { now, secondsAgo, rotations };
+  return rotations;
 }
 
 function updateDisplay() {
-  const { now, rotations } = calculateRotations();
-  const output = document.getElementById("output");
-  const detail = document.getElementById("detail");
-  output.textContent = `今（${now.toLocaleString()}）までに、地球は約 ${rotations.toLocaleString()} 回 回りました。`;
+  const now = new Date();
+  const h = String(now.getHours()).padStart(2, '0');
+  const m = String(now.getMinutes()).padStart(2, '0');
+  const s = String(now.getSeconds()).padStart(2, '0');
+
+  // 地球の総回転数（46億年分）
+  const rotations = calculateRotations();
+
+  // 微妙なズレ（リアルタイム増加）を加える
+  const millis = now.getMilliseconds();
+  const delta = (millis / 1000) / SIDEREAL_DAY;
+  const totalRotations = rotations + delta;
+
+  // 表示文を作成
+  const phrase = `${h}時${m}分${s}秒${totalRotations.toLocaleString(undefined,{maximumFractionDigits:3})}回地球が回ったとき`;
+
+  // 画面に反映
+  document.getElementById("output").textContent = phrase;
 }
 
-// 2秒ごとに更新（「今」も動いている感を出す）
+// 更新を開始
 updateDisplay();
-setInterval(updateDisplay, 1000);
+setInterval(updateDisplay, 100);
 </script>
 </body>
 </html>
