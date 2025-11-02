@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>「何時何分何秒何回地球が回ったとき」を対処したい人へ</title>
+<style>
+body{
+  font-family: system-ui, -apple-system, "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
+  background:#f7fafc; color:#222; text-align:center;
+  margin:0; padding:0;
+}
+main{
+  max-width: 720px; margin: 40px auto; background:#fff; padding:20px;
+  border-radius:14px; box-shadow:0 6px 20px rgba(0,0,0,0.1);
+}
+h1{ font-size:1.4rem; margin-bottom:12px; }
+p.desc{ color:#555; margin-bottom:18px; }
+.card{
+  padding:16px; background:linear-gradient(180deg,#fff,#f5f9ff);
+  border:1px solid #e3ebf9; border-radius:10px;
+  font-size:1.2rem; box-shadow:0 3px 8px rgba(0,0,0,0.05);
+}
+small{ color:#666; display:block; margin-top:12px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>「何時何分何秒何回地球が回ったとき」を対処したい人へ</h1>
+  <h2>今までに地球が回った回数</h2>
+  <p class="desc">地球の誕生（約46億年前）を基準にしています。<br>
+  恒星日（86164.091秒）で計算中。</p>
+  <div class="card" id="output">計算中...</div>
+</main>
+
+<script>
+const SIDEREAL_DAY = 86164.091; // 地球1回転の秒数
+const YEARS_AGO = 4.6e9; // 46億年前
+
+function calculateRotations() {
+  // 46億年前を現在から引く
+  const now = new Date();
+  const secondsAgo = YEARS_AGO * 365.25 * 24 * 3600;
+  const rotations = secondsAgo / SIDEREAL_DAY;
+  return { now, secondsAgo, rotations };
+}
+
+function updateDisplay() {
+  const { now, rotations } = calculateRotations();
+  const output = document.getElementById("output");
+  const detail = document.getElementById("detail");
+  output.textContent = `今（${now.toLocaleString()}）までに、地球は約 ${rotations.toLocaleString()} 回 回りました。`;
+}
+
+// 2秒ごとに更新（「今」も動いている感を出す）
+updateDisplay();
+setInterval(updateDisplay, 1000);
+</script>
+</body>
+</html>
